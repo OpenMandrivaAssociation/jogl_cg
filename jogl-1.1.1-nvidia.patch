@@ -1,0 +1,54 @@
+--- jogl-1.1.1/src/classes/com/sun/opengl/impl/x11/DRIHack.java.orig	2011-08-03 22:29:20.841261580 -0300
++++ jogl-1.1.1/src/classes/com/sun/opengl/impl/x11/DRIHack.java	2011-08-03 22:29:38.038367628 -0300
+@@ -78,40 +78,27 @@ import com.sun.opengl.impl.*;
+ 
+ public class DRIHack {
+   private static final boolean DEBUG = Debug.debug("DRIHack");
+-  private static boolean driHackNeeded;
+   private static NativeLibrary oglLib;
+ 
+   public static void begin() {
+-    AccessController.doPrivileged(new PrivilegedAction() {
+-        public Object run() {
+-          String os = System.getProperty("os.name").toLowerCase();
+-          // Do DRI hack on all Linux distributions for best robustness
+-          driHackNeeded =
+-            (os.startsWith("linux") ||
+-             new File("/usr/lib/dri").exists() ||
+-             new File("/usr/X11R6/lib/modules/dri").exists());
+-          // Allow manual overriding for now as a workaround for
+-          // problems seen in some situations -- needs more investigation
+-          if (System.getProperty("jogl.drihack.disable") != null) {
+-            driHackNeeded = false;
+-          }
+-          return null;
+-        }
+-      });
+-
+-    if (driHackNeeded) {
++    // Allow manual overriding for now as a workaround for
++    // problems seen in some situations -- needs more investigation
++    if (System.getProperty("jogl.drihack.disable") == null) {
+       if (DEBUG) {
+         System.err.println("Beginning DRI hack");
+       }
+ 
+       // Try a few different variants for best robustness
+-      // In theory probably only the first is necessary
+-      oglLib = NativeLibrary.open("libGL.so.1", null);
+-      if (DEBUG && oglLib != null) System.err.println(" Found libGL.so.1");
++      oglLib = NativeLibrary.open("@libdir@/nvidia-current/libGL.so.1", null);
+       if (oglLib == null) {
+-        oglLib = NativeLibrary.open("/usr/lib/libGL.so.1", null);
+-        if (DEBUG && oglLib != null) System.err.println(" Found /usr/lib/libGL.so.1");
++        oglLib = NativeLibrary.open("@libdir@/libGL.so.1", null);
++        if (oglLib == null) {
++          oglLib = NativeLibrary.open("libGL.so.1", null);
++          if (DEBUG && oglLib != null) System.err.println(" Found libGL.so.1");
++        }
++        else if (DEBUG) System.err.println(" Found @libdir@/libGL.so.1");
+       }
++      else if (DEBUG) System.err.println(" Found @libdir@/nvidia-current/libGL.so.1");
+     }
+   }
+ 

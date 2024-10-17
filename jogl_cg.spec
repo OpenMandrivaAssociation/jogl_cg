@@ -8,7 +8,7 @@ Version:	%{jogl_version}
 Release:	1
 Group:		Development/Java
 License:	BSD
-URL:		http://jogl.dev.java.net/
+URL:		https://jogl.dev.java.net/
 # svn co https://svn.java.net/svn/jogl~svn/branches/1.x-maint jogl-1.1.1
 Source0:	jogl-%{jogl_version}.tar.bz2
 # match gluegen package
